@@ -1,4 +1,4 @@
-# Employee Tracker
+# Ecommerce-Backend
 
 This is the backend of an eccomerce site, which uses the a sql database along with specific routes to view, and modify data in the database.
 
