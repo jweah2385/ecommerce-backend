@@ -27,7 +27,8 @@ This project is licensed under the MIT License.
 
 ## Preview
 
-![This is a preview of the application](/02-Challenge/Assets/Screenshot%202023-09-15%20at%205.59.18%20PM.png)
+![This is a preview of the application](<img width="836" alt="Screenshot 2023-09-15 at 5 59 18 PM" src="https://github.com/jweah2385/ecommerce-backend/assets/134350647/da823c66-16a8-4309-b1a9-c95569259ff1">)
+
 
 
 ## Installation
