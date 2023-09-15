@@ -2,13 +2,12 @@ const router = require('express').Router();
 const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
-
 router.get('/', async (req, res) => {
   // find all categories
   // be sure to include its associated Products
   try {
     const allCat = await Category.findAll({
-      include: [{model: Product}]
+      include: [{ model: Product }],
     });
     res.status(200).json(allCat);
   } catch (err) {
@@ -21,23 +20,22 @@ router.get('/:id', async (req, res) => {
   // be sure to include its associated Products
   try {
     const oneCat = await Category.findByPk(req.params.id, {
-      include: [{model: Product}]
+      include: [{ model: Product }],
     });
     if (!oneCat) {
       res.status(404).json({ message: 'No category with this id!' });
       return;
-    } 
-    res.status(200).json(oneCat);
     }
-catch (err) {
-  res.status(500).json(err);
-      
-}});
+    res.status(200).json(oneCat);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 router.post('/', async (req, res) => {
   // create a new category
   try {
-  const newCat = await Category.create({
+    const newCat = await Category.create({
       category_name: req.body.category_name,
     });
     res.status(200).json(newCat);
@@ -66,20 +64,25 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
-  try {
-    const deletedCat = await Category.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
-    if (!deletedCat) {
-      res.status(404).json({ message: 'No category with this id!' });
-      return;
-    }
-    res.status(200).json(deletedCat);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+  deleteCategoryAndProducts(req.params.id);
 });
+
+const deleteCategoryAndProducts = async (categoryId) => {
+  try {
+    const productsToUpdate = await Product.findAll({
+      where: { category_id: categoryId },
+    });
+
+    for (const product of productsToUpdate) {
+      await product.update({ category_id: null }); 
+    }
+
+    await Category.destroy({ where: { id: categoryId } });
+
+    console.log('Category and associated products deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting category and products:', error);
+  }
+};
 
 module.exports = router;

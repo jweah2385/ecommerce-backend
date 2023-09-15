@@ -115,6 +115,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
+  deleteProductAndTags(req.params.id);
   try {
     const deletedProduct = await Product.destroy({
       where: {
@@ -130,5 +131,37 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+// Function to delete a product and its associated tags
+const deleteProductAndTags = async (productId) => {
+  try {
+   await ProductTag.destroy({ where: { product_id: productId } });
+
+    await Product.destroy({ where: { id: productId } });
+
+   const tagsToDelete = await Tag.findAll({
+      include: [
+        {
+          model: Product,
+          through: ProductTag,
+          where: { id: productId }, // Filter for the product you're deleting
+        },
+      ],
+    });
+
+    // Loop through the tags and delete them if they are no longer associated
+    for (const tag of tagsToDelete) {
+      const associatedProducts = await tag.getProducts();
+      if (associatedProducts.length === 0) {
+        await Tag.destroy({ where: { id: tag.id } });
+      }
+    }
+
+    console.log('Product and associated tags deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting product and tags:', error);
+  }
+};
+
 
 module.exports = router;

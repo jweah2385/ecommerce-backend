@@ -65,6 +65,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   // delete on tag by its `id` value
+  deleteTagAndAssociations(req.params.id);
   try {
     const deletedTag = await Tag.destroy({
       where: {
@@ -80,5 +81,33 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+
+// Function to delete a tag and its associations
+const deleteTagAndAssociations = async (tagId) => {
+  try {
+    
+    await ProductTag.destroy({ where: { tag_id: tagId } });
+
+   
+    const tag = await Tag.findByPk(tagId);
+
+    if (tag) {
+
+      const associatedProducts = await tag.getProducts();
+
+      if (associatedProducts.length === 0) {
+        await tag.destroy();
+      }
+    }
+
+    console.log('Tag and associated associations deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting tag and associations:', error);
+  }
+};
+
+
+
 
 module.exports = router;

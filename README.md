@@ -27,13 +27,12 @@ This project is licensed under the MIT License.
 
 ## Preview
 
-![This is a preview of the application]()
+![This is a preview of the application](/02-Challenge/Assets/Screenshot%202023-09-15%20at%205.59.18%20PM.png)
 
 
 ## Installation
 
 - Node
-- Inquirer
 
 ## Technologies Used
 
